@@ -3,21 +3,12 @@ const {db} = require('../firebaseConfig.js')
  
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('add-user')
-		.setDescription("Adds a user to the database if they don't already exist within it")
-		.addUserOption(option =>
-			option.setName("user-tag")
-			.setDescription("User's @")
-			.setRequired(true))
-			.addIntegerOption(option =>
-				option.setName("initial-bal-int")
-			.setDescription("User's initial Balance.")
-			.setRequired(true))
-			.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+		.setName('register')
+		.setDescription("Registers you to the Database if you're not already in it."),
 		
 	async execute(interaction) {
-		const userId = interaction.options.getUser("user-tag").id;
-		const initialBalance = interaction.options.getInteger("initial-bal-int")
+		const userId = interaction.user.id
+		const initialBalance = 50
 		db.collection("users")
 		.where("discordId","==",userId)
 		.get()
@@ -30,7 +21,7 @@ module.exports = {
 						})
 						.then((docRef) => {
 							console.log("Document written with ID: ", docRef.id);
-							VerificationString = "User added Successfully."
+							VerificationString = `Registration Complete; Welcome ${interaction.user.username}.`
 							interaction.reply(VerificationString)
 						})
 						.catch((error) => {
@@ -40,7 +31,7 @@ module.exports = {
 			else{
 				QuerySnapshot.forEach((doc) => {
 					if(doc.data().discordId == userId){
-						VerificationString = "User Already exists in the Database."
+						VerificationString = "You already exist in our database."
 					}
 					interaction.reply(VerificationString);})
 			}
@@ -50,6 +41,3 @@ module.exports = {
 		});
 	},
 };
-
-
-	
