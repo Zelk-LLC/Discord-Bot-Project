@@ -26,9 +26,9 @@ module.exports = {
 					.setColor([68, 41, 37])
 					.setTitle('User Balance:')
 					.setAuthor({name:interaction.options.getUser('user-tag').username, iconURL:interaction.options.getUser("user-tag").avatarURL()})
-					.setDescription(`📟 Hello, ${interaction.user.username}, the user ${interaction.options.getUser("user-tag").username} has a total balance of ${doc.data().balance} Scrip.`)
+					.setDescription(`📟 Hello, ${interaction.user.username}, the user ${interaction.options.getUser("user-tag").username} has a total balance of ${doc.data().balance} scrip.`)
 					.setTimestamp()
-					.setFooter({ text: 'Displays Script amount for given user.'});
+					.setFooter({ text: 'Displays scrip amount for given user.'});
 
 					interaction.reply({embeds: [exampleEmbed]})
 							})
