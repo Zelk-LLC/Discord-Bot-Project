@@ -5,19 +5,19 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('pay')
-		.setDescription("Pay a given Ammount to user from your own wallet.")
+		.setDescription("Pay a given Amount to user from your own wallet.")
 		.addUserOption(option =>
 			option.setName("user-tag")
 			.setDescription("User's @")
 			.setRequired(true))
 			.addIntegerOption(option =>
-				option.setName("ammount")
-			.setDescription("ammount")
+				option.setName("amount")
+			.setDescription("amount")
 			.setRequired(true)),
 		
 	async execute(interaction) {
 		const userId = interaction.options.getUser("user-tag").id;
-		const ammount = interaction.options.getInteger("ammount")
+		const amount = interaction.options.getInteger("amount")
 		db.collection("users")
 		.where("discordId","==",userId)
 		.get()
@@ -30,7 +30,7 @@ module.exports = {
                     db.collection("users")
                     .doc(doc.id)
                     .update({
-                        balance: doc.data().balance + ammount
+                        balance: doc.data().balance + amount
                     }).then(() => {
                         db.collection('users')
                         .where("discordId","==",interaction.user.id)
@@ -40,13 +40,13 @@ module.exports = {
                                 db.collection("users")
                                 .doc(doc.id)
                                 .update({
-                                    balance: doc.data().balance - ammount
+                                    balance: doc.data().balance - amount
                                 })
                             })
                         }).catch((error) => {
                             console.log("Error getting documents: ", error);
                         });
-                        VerificationString = `User ${interaction.options.getUser('user-tag').username} has been paid ${ammount} Scrip.`
+                        VerificationString = `User ${interaction.options.getUser('user-tag').username} has been paid ${amount} Scrip.`
                         interaction.reply(VerificationString)
                     })
                     .catch((error) => {
