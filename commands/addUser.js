@@ -40,7 +40,7 @@ module.exports = {
 			else{
 				QuerySnapshot.forEach((doc) => {
 					if(doc.data().discordId == userId){
-						VerificationString = "User already exists in the aatabase."
+						VerificationString = "User already exists in the database."
 					}
 					interaction.reply(VerificationString);})
 			}

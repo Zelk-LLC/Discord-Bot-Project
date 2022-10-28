@@ -5,7 +5,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('pay')
-		.setDescription("Pay a given Amount to user from your own wallet.")
+		.setDescription("Pay a given amount to user from your own wallet.")
 		.addUserOption(option =>
 			option.setName("user-tag")
 			.setDescription("User's @")
@@ -46,7 +46,7 @@ module.exports = {
                         }).catch((error) => {
                             console.log("Error getting documents: ", error);
                         });
-                        VerificationString = `User ${interaction.options.getUser('user-tag').username} has been paid ${amount} Scrip.`
+                        VerificationString = `User ${interaction.options.getUser('user-tag').username} has been paid ${amount} scrip.`
                         interaction.reply(VerificationString)
                     })
                     .catch((error) => {

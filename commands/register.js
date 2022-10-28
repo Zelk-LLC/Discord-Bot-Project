@@ -4,7 +4,7 @@ const {db} = require('../firebaseConfig.js')
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('register')
-		.setDescription("Registers you to the Database if you're not already in it."),
+		.setDescription("Registers you to the database if you're not already in it."),
 		
 	async execute(interaction) {
 		const userId = interaction.user.id
