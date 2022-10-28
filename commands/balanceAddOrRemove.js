@@ -5,20 +5,20 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('sum-player-balance')
-		.setDescription("Adds or removes specified Ammount to user.")
+		.setDescription("Adds or removes specified Amount to user.")
 		.addUserOption(option =>
 			option.setName("user-tag")
 			.setDescription("User's @")
 			.setRequired(true))
 			.addIntegerOption(option =>
-				option.setName("ammount")
-			.setDescription("ammount")
+				option.setName("amount")
+			.setDescription("amount")
 			.setRequired(true))
 			.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 		
 	async execute(interaction) {
 		const userId = interaction.options.getUser("user-tag").id;
-		const ammount = interaction.options.getInteger("ammount")
+		const amount = interaction.options.getInteger("amount")
 		db.collection("users")
 		.where("discordId","==",userId)
 		.get()
@@ -31,9 +31,9 @@ module.exports = {
                     db.collection("users")
                     .doc(doc.id)
                     .update({
-                        balance: doc.data().balance + ammount
+                        balance: doc.data().balance + amount
                     }).then(() => {
-                        VerificationString = `User ${interaction.options.getUser('user-tag').username} has recieved ${ammount} Scrip and now has a balance of ${doc.data().balance + ammount} Scrip.`
+                        VerificationString = `User ${interaction.options.getUser('user-tag').username} has recieved ${amount} Scrip and now has a balance of ${doc.data().balance + amount} Scrip.`
                         interaction.reply(VerificationString)
                     })
                     .catch((error) => {

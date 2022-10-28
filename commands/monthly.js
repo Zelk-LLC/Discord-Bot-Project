@@ -5,7 +5,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('monthly')
-		.setDescription("Pay a specified Ammount to user monthly."),
+		.setDescription("Pay a specified Amount to user monthly."),
 		
 	async execute(interaction) {
         const CurrentTime = new Date();
