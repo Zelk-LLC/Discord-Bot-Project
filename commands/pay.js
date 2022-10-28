@@ -12,13 +12,31 @@ module.exports = {
 			.setRequired(true))
 			.addIntegerOption(option =>
 				option.setName("ammount")
-			.setDescription("ammount")
-			.setRequired(true)),
+				.setDescription("ammount")
+				.setMinValue(1)
+				.setRequired(true)),
+				
 		
 	async execute(interaction) {
 		const userId = interaction.options.getUser("user-tag").id;
 		const ammount = interaction.options.getInteger("ammount")
-		db.collection("users")
+		db.collection('users')
+		.where("discordId","==", interaction.user.id)
+		.get()
+		.then((QuerySnapshot)=>{
+			if(QuerySnapshot.empty){
+				interaction.reply("You do not exist in the database.")
+			}else{
+				db.collection('users')
+				.where('discordId',"==",interaction.user.id)
+				.get()
+				.then((QuerySnapshot)=>{
+					QuerySnapshot.forEach((doc)=>{
+						if(doc.data().balance < ammount){
+							interaction.reply("You do not have enough Scrip to conduct this transaction.")
+						}
+						else{
+							db.collection("users")
 		.where("discordId","==",userId)
 		.get()
 		.then((QuerySnapshot) =>{
@@ -58,5 +76,10 @@ module.exports = {
 		}).catch((error) => {
 			console.log("Error getting documents: ", error);
 		});
+						}
+					})
+				})
+			}
+		})
 	},
 };

@@ -17,7 +17,8 @@ module.exports = {
 				console.log(userId)
 						db.collection("users").add({
 							discordId: userId,
-							balance: initialBalance
+							balance: initialBalance,
+							monthFromNow:"PLACEHOLDER NULL"
 						})
 						.then((docRef) => {
 							console.log("Document written with ID: ", docRef.id);
