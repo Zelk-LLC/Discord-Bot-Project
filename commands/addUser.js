@@ -11,7 +11,7 @@ module.exports = {
 			.setRequired(true))
 			.addIntegerOption(option =>
 				option.setName("initial-bal-int")
-			.setDescription("User's initial Balance.")
+			.setDescription("User's initial balance.")
 			.setRequired(true))
 			.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 		
@@ -40,7 +40,7 @@ module.exports = {
 			else{
 				QuerySnapshot.forEach((doc) => {
 					if(doc.data().discordId == userId){
-						VerificationString = "User Already exists in the Database."
+						VerificationString = "User already exists in the aatabase."
 					}
 					interaction.reply(VerificationString);})
 			}
