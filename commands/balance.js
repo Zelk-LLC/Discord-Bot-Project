@@ -20,9 +20,9 @@ module.exports = {
 					.setColor([68, 41, 37])
 					.setTitle('User Balance:')
 					.setAuthor({name:interaction.user.username, iconURL:interaction.user.avatarURL()})
-					.setDescription(`📟 Hello, ${interaction.user.username}, you have a total balance of ${balance} Scrip.`)
+					.setDescription(`📟 Hello, ${interaction.user.username}, you have a total balance of ${balance} scrip.`)
 					.setTimestamp()
-					.setFooter({ text: 'Displays Script amount for given user.'});
+					.setFooter({ text: 'Displays scrip amount for given user.'});
 		interaction.reply({ embeds: [balanceEmbed] });
 	} // end of execute
 };
