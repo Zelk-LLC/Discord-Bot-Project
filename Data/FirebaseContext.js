@@ -1,4 +1,4 @@
-import { db } from '../firebaseConfig.js'
+const { db } = require('../firebaseConfig.js')
 
 /**
  * Updates the user's balance in the database
@@ -19,6 +19,20 @@ const updateBalance = async (userId, amount) => {
 }
 
 /**
+ * Get the first user from the database that matches the given discord ID
+ * @param {*} userId users's discord ID
+ * @returns Firebase document of the user
+ */
+const getUser = async (userId) => {
+    // query the database to find the user
+    const user = await db.collection('users').where('discordId', '==', userId).get()
+    // if the user is not found, return
+    if (user.empty) return
+    // if the user is found, return the user
+    return user
+}
+
+/**
  * Adds a new user to the database
  * @param {*} userId user's discord ID
  * @param {*} initialBalance initial starting balance of the user
@@ -36,7 +50,8 @@ const addUser = async (userId, initialBalance) => {
     })
 }
 
-export default {
+module.exports = {
     updateBalance,
-    addUser
-    }
+    addUser,
+    getUser
+}
