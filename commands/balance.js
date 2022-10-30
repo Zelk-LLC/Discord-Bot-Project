@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const {db} = require('../firebaseConfig.js')
 const { EmbedBuilder } = require('discord.js');
 
-var balance
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('balance')
@@ -18,7 +17,7 @@ module.exports = {
 			}
 			else{
 			QuerySnapshot.forEach((doc) => {
-				console.log(balance)
+				console.log(doc.data().balance)
 				const exampleEmbed = new EmbedBuilder()
 					.setColor([68, 41, 37])
 					.setTitle('User Balance:')
@@ -26,7 +25,6 @@ module.exports = {
 					.setDescription(`📟 Hello, ${interaction.user.username}, you have a total balance of ${doc.data().balance} Scrip.`)
 					.setTimestamp()
 					.setFooter({ text: 'Displays Script amount for given user.'});
-
 					interaction.reply({embeds: [exampleEmbed]})
 							})
 						}

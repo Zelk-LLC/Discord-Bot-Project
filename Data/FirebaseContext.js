@@ -1,4 +1,4 @@
-import { db } from '../firebaseConfig.js'
+const { db } = require( '../firebaseConfig.js')
 
 /**
  * Updates the user's balance in the database
@@ -36,7 +36,7 @@ const addUser = async (userId, initialBalance) => {
     })
 }
 
-export default {
+module.exports = {
     updateBalance,
     addUser
     }
