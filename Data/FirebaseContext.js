@@ -1,4 +1,4 @@
-const { db } = require('../firebaseConfig.js')
+const { db } = require( '../firebaseConfig.js')
 
 /**
  * Updates the user's balance in the database
