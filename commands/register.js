@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField,PermissionFlagsBits } = require('discord.js');
-import { db } from '../firebaseConfig.js'
+const { db } = require('../firebaseConfig.js')
  
 module.exports = {
 	data: new SlashCommandBuilder()
