@@ -3,6 +3,7 @@ const { Client, Events, GatewayIntentBits,Collection,REST,Routes} = require('dis
 const { clientId, token } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
+const { getAllItems } = require('./Data/FirebaseContext.js');
 
 
 // Create a new client instance
@@ -11,6 +12,8 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
 
 const commands = [];
+
+const items = getAllItems();
 
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -59,7 +62,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 
 	try {
-		await command.execute(interaction);
+		await command.execute(interaction, items);
 	} catch (error) {
 		console.error(error);
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
@@ -74,3 +77,7 @@ client.once(Events.ClientReady, c => {
 
 // Log in to Discord with your client's token
 client.login(token);
+
+module.exports = {
+	items
+}
