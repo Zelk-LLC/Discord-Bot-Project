@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageButton, MessageActionRow } = require('discord.js');
+const { SlashCommandBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
 const {db} = require('../firebaseConfig.js')
 const { EmbedBuilder } = require('discord.js');
 const { getAllItems } = require('../Data/FirebaseContext.js');
@@ -11,9 +11,8 @@ module.exports = {
 	async execute(interaction) {
 		const embeds = [];
 		const pages = {};
-		const items  = await getAllItems();
-		
-		console.log(items);
+		const items = await getAllItems();
+		const index = 0;
 		const pageCountMax = Math.ceil(items.docs.length / 25);
 				
 		for(let i = 0; i < pageCountMax; i++){
@@ -23,21 +22,31 @@ module.exports = {
 				.setDescription('Here is a list of all the items you can buy.')
 				.setTimestamp()
 				.setFooter({ text:`Page ${i + 1} of ${pageCountMax.toString()}`});
+			const fields = [];
+			for(let j = 0; j < 25; j++){
+				if(items.docs[i * 25 + j] == undefined){
+					break;
+				}
+				fields.push({name: items.docs[i * 25 + j].data().name, value: `Price: ${items.docs[i * 25 + j].data().price} Scrip`});
+			}
+			
+			embed.addFields(fields);
 			embeds.push(embed);
 		}
+		console.log(embeds);
 		
 		const getRow = (id) => {
-			const row = new MessageActionRow()
+			const row = new ActionRowBuilder()
 				.addComponents(
-					new MessageButton()
+					new ButtonBuilder()
 						.setCustomId('prev')
 						.setLabel('Previous')
-						.setStyle('PRIMARY')
+						.setStyle(ButtonStyle.Primary)
 						.setDisabled(pages[id] == 0),
-					new MessageButton()
+					new ButtonBuilder()
 						.setCustomId('next')
 						.setLabel('Next')
-						.setStyle('PRIMARY')
+						.setStyle(ButtonStyle.Primary)
 						.setDisabled(pages[id] == pageCountMax - 1),
 				);
 			return row;
@@ -50,7 +59,7 @@ module.exports = {
 
 		interaction.reply({ embeds: [embed], components: [getRow(id)] });
 
-		let collector = interaction.channel.createMessageComponentCollector({ filter: i => i.user.id === userID, time: 15000 });
+		let collector = interaction.channel.createMessageComponentCollector({ filter: i => i.user.id === id, time: 15000 });
 
 		collector.on('collect', async i => {
 			if(!i.isButton()) return;
@@ -63,21 +72,5 @@ module.exports = {
 			const embed = embeds[pages[id]];
 			i.update({ embeds: [embed], components: [getRow(id)] });
 		});
-
-
-        /* db.collection('items')
-        .get()
-        .then((QuerySnapshot) =>{
-			const exampleEmbed = new EmbedBuilder()
-					.setColor([68, 41, 37])
-					.setTitle('Scrip Shop')
-					.setAuthor({name:interaction.user.username, iconURL:interaction.user.avatarURL()})
-					.setDescription(`📟 Hello, ${interaction.user.username}, here are the items available for Purchase.`)
-					.setTimestamp()
-					.setFooter({ text: `Use /buy and follow the instructions to buy an item. Page: of `});
-            QuerySnapshot.forEach((doc) => {
-                    exampleEmbed.addFields({name:doc.data().name.toString(), value: `Price: ${doc.data().price.toString()} \n In Stock: ${doc.data().quantity.toString()}`,inline:true})
-            })
-			interaction.reply({embeds: [exampleEmbed]})}) */
-    },
+    }
 };
