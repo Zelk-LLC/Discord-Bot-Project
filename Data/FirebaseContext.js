@@ -60,9 +60,35 @@ const addUser = async (userId, initialBalance) => {
     })
 }
 
+const getItem = async (itemName) => {
+    // query the database to find the item
+    const item = await db.collection('items').where('name', '==', itemName).get()
+    // if the item is not found, return
+    if (item.empty) return
+    // if the item is found, return the item
+    return item
+}
+
+const addItem = async (maxPerUser,itemName, itemPrice,quantity,type) => {
+    // query the database to find the item
+    const item = await db.collection('items').where('name', '==', itemName).get()
+    // if the item is found, return
+    if (!item.empty) return
+    // if the item is not found, add it to the database
+    db.collection('items').add({
+        maxPerUser: maxPerUser,
+            name: itemName,
+            price: itemPrice,
+            quantity: quantity,
+            type: type
+    })
+}
+
 module.exports = {
     updateBalance,
     addUser,
     getUser,
-    getAllItems
+    getAllItems,
+    addItem,
+    getItem
 }
