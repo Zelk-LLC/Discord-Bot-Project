@@ -10,6 +10,7 @@ module.exports = {
 	async execute(interaction) {
         const CurrentTime = new Date();
         const MonthFromNow = new Date(CurrentTime);
+        console.log(interaction.member.roles.cache.at(1).id)
         MonthFromNow.setMonth(MonthFromNow.getMonth() + 1)
         db.collection('users')
         .where('discordId' ,'==',interaction.user.id)
