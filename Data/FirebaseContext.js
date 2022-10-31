@@ -19,6 +19,16 @@ const updateBalance = async (userId, amount) => {
 }
 
 /**
+ * 
+ * @returns collection of all items in the database
+ */
+const getAllItems = async () => {
+    const items = await db.collection('items').get()
+    return items
+}
+
+
+/**
  * Get the first user from the database that matches the given discord ID
  * @param {*} userId users's discord ID
  * @returns Firebase document of the user
@@ -53,5 +63,6 @@ const addUser = async (userId, initialBalance) => {
 module.exports = {
     updateBalance,
     addUser,
-    getUser
+    getUser,
+    getAllItems
 }
