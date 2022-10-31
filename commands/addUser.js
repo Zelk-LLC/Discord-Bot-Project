@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionsBitField,PermissionFlagsBits } = require('discord.js');
 const {db} = require('../firebaseConfig.js')
- 
+const { getUser, addUser } = require('../Data/FirebaseContext.js');
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('add-user')
@@ -18,37 +19,23 @@ module.exports = {
 	async execute(interaction) {
 		const userId = interaction.options.getUser("user-tag").id;
 		const initialBalance = interaction.options.getInteger("initial-bal-int")
-		db.collection("users")
-		.where("discordId","==",userId)
-		.get()
-		.then((QuerySnapshot) =>{
-			if(QuerySnapshot.empty){
-				console.log(userId)
-						db.collection("users").add({
-							discordId: userId,
-							balance: initialBalance
-						})
-						.then((docRef) => {
-							console.log("Document written with ID: ", docRef.id);
-							VerificationString = "User added Successfully."
-							interaction.reply(VerificationString)
-						})
-						.catch((error) => {
-							console.error("Error adding document: ", error);
-						});				
-			}
-			else{
-				QuerySnapshot.forEach((doc) => {
-					if(doc.data().discordId == userId){
-						VerificationString = "User Already exists in the Database."
-					}
-					interaction.reply(VerificationString);})
-			}
-			
-		}).catch((error) => {
-			console.log("Error getting documents: ", error);
-		});
-	},
+
+		const user = await getUser(userId);
+		if(user == undefined){
+			// User does not exist in the database
+			// Add them to the database
+			addUser(userId, initialBalance);
+			// Send a message to the user that they have successfully been added.
+			VerificationString = `User ${interaction.options.getUser('user-tag').username} has been added to the database with an initial balance of ${initialBalance} scrip.`;
+			interaction.reply(VerificationString);
+		}
+		else{
+			// User already exists in the database
+			// Send a message to the user that they have already been added.
+			VerificationString = `User ${interaction.options.getUser('user-tag').username} already exists in the database.`;
+			interaction.reply(VerificationString);
+		}
+	}
 };
 
 
