@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionsBitField,PermissionFlagsBits } = require('discord.js');
 const {db} = require('../firebaseConfig.js')
 const { EmbedBuilder } = require('discord.js');
-const { updateBalance } = require( '../Data/FirebaseContext.js')
+const { updateBalance, getUser } = require('../Data/FirebaseContext.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -28,43 +28,29 @@ module.exports = {
 			return interaction.reply("You can't pay yourself.");
 		}
 
-		// Query database to find user from the database.
-		db.collection('users')
-		.where("discordId","==", senderID)
-		.get()
-		.then((UserPaying)=>{
-			// If user is not found in the database, then return.
-			if(UserPaying.empty){
-				interaction.reply("You do not exist in the database.");
-			}else{
-				// if the user is found, check if the user has enough balance to pay.
-				UserPaying.forEach((doc)=>{
-					if(doc.data().balance < amount){
-						interaction.reply("You do not have enough Scrip to conduct this transaction.");
-					}
-					else{
-						db.collection("users")
-						.where("discordId","==",recipientID)
-						.get()
-						.then((Recipient) =>{
-							if(Recipient.empty){
-								interaction.reply("That user does not exist in our database.");
-							}
-							// Update balances of both users.
-							updateBalance(recipientID, amount)
-							.then(()=>{
-								updateBalance(senderID, -amount);
-								
-								// Send a message to the user that they have successfully paid.
-								VerificationString = `User ${interaction.options.getUser('user-tag').username} has been paid ${amount} scrip.`;
-                        		interaction.reply(VerificationString);
-							}); // end of updateBalance
-						}) // end of Recipient
-					} // end of else
-				}) // end of UserPaying
-			} // end of else
-		}).catch((error) => {
-			console.log("Error getting documents: ", error);
-		}); // end of db.collection
-	}, // end of execute
+		const recipient = await getUser(recipientID);
+		const sender = await getUser(senderID);
+		
+		if(sender == undefined){
+			return interaction.reply("You don't have an account. Please use /register to create one.");
+		}
+
+		if(recipient == undefined){
+			return interaction.reply("The user you are trying to pay does not have an account. Please have them use /register to create one.");
+		}
+
+		if(sender.docs[0].data().balance < amount){
+			return interaction.reply("You don't have enough scrip to pay that amount.");
+		}
+
+		// User has enough scrip to pay the amount
+		// Update the sender's balance
+		updateBalance(senderID, -amount);
+		// Update the recipient's balance
+		updateBalance(recipientID, amount);
+
+		// Send a message to the user that they have successfully paid.
+		VerificationString = `User ${interaction.options.getUser('user-tag').username} has been paid ${amount} scrip.`;
+		interaction.reply(VerificationString);
+	} // end of execute
 };

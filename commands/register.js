@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, PermissionsBitField,PermissionFlagsBits } = require('discord.js');
-const { db } = require('../firebaseConfig.js')
+const { db } = require('../firebaseConfig.js');
+const { addUser, getUser } = require('../Data/FirebaseContext.js');
  
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -9,36 +10,21 @@ module.exports = {
 	async execute(interaction) {
 		const userId = interaction.user.id
 		const initialBalance = 50
-		db.collection("users")
-		.where("discordId","==",userId)
-		.get()
-		.then((QuerySnapshot) =>{
-			if(QuerySnapshot.empty){
-				console.log(userId)
-						db.collection("users").add({
-							discordId: userId,
-							balance: initialBalance,
-							monthFromNow:"PLACEHOLDER NULL"
-						})
-						.then((docRef) => {
-							console.log("Document written with ID: ", docRef.id);
-							VerificationString = `Registration Complete; Welcome ${interaction.user.username}.`
-							interaction.reply(VerificationString)
-						})
-						.catch((error) => {
-							console.error("Error adding document: ", error);
-						});				
-			}
-			else{
-				QuerySnapshot.forEach((doc) => {
-					if(doc.data().discordId == userId){
-						VerificationString = "You already exist in our database."
-					}
-					interaction.reply(VerificationString);})
-			}
-			
-		}).catch((error) => {
-			console.log("Error getting documents: ", error);
-		});
-	},
+		
+		const user = await getUser(userId);
+		if(user == undefined){
+			// User does not exist in the database
+			// Add them to the database
+			addUser(userId, initialBalance);
+			// Send a message to the user that they have successfully been added.
+			VerificationString = `Registration Complete! Welcome ${interaction.user.username} to the scrip economy! You have been given ${initialBalance} scrip.`;
+			interaction.reply(VerificationString);
+		}
+		else{
+			// User already exists in the database
+			// Send a message to the user that they have already been added.
+			VerificationString = `You are already registered ${interaction.user.username}!`;
+			interaction.reply(VerificationString);
+		}
+	}
 };
