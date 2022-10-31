@@ -20,7 +20,7 @@ module.exports = {
 		
 	async execute(interaction) {
 		const recipientID = interaction.options.getUser("user-tag").id;
-		const senderID = interaction.user.id;
+		const senderID = interaction.user;
 		const amount = interaction.options.getInteger("amount")
 		
 		// Make sure the user is not paying themselves
