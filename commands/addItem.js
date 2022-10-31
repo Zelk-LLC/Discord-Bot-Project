@@ -1,6 +1,6 @@
 const { SlashCommandBuilder,PermissionsBitField,PermissionFlagsBits } = require('discord.js');
 const {db} = require('../firebaseConfig.js')
-const { EmbedBuilder } = require('discord.js');
+const { getItem, addItem } = require('../Data/FirebaseContext.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -38,16 +38,12 @@ module.exports = {
         const quantity = interaction.options.getInteger('quantity')
         const type = interaction.options.getString('type')
 
-        db.collection('items').add({
-            maxPerUser: maxPerUser,
-            name: name,
-            price: price,
-            quantity: quantity,
-            type: type
-        })
-        .then(() =>{
-            console.log('Document created succesfully.')
-            interaction.reply('Item Added successfully.')
-        })
+        const item = getItem(name);
+        if(item != undefined){
+            return interaction.reply("Item already exists.");
+        }
+
+        addItem(name, maxPerUser, price, quantity, type);
+        interaction.reply(`Item ${name} has been added.`);
     }
 };
