@@ -133,6 +133,16 @@ const addItemToUser = async (userId, item) => {
     }
 }
 
+const getInventory = async (userId) => {
+    // query the database to find the user
+    const user = await db.collection('users').where('discordId', '==', userId).get()
+    // if the user is not found, return
+    if (user.empty) return
+    // if the user is found, return their inventory
+    const inventory = await db.collection('users').doc(user.docs[0].id).collection('inventory').get()
+    return inventory
+}
+
 module.exports = {
     updateBalance,
     addUser,
@@ -140,5 +150,6 @@ module.exports = {
     getAllItems,
     addItem,
     getItem,
-    addItemToUser
+    addItemToUser,
+    getInventory
 }
