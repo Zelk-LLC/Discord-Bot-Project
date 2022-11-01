@@ -104,7 +104,6 @@ const addItemToUser = async (userId, item) => {
     // if the user is not found, return
     if (user.empty) return
 
-    
     if(itemData.docs[0].data().quantity > 0){
 
         //map of the item to push to db.
