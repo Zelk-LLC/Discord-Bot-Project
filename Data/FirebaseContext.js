@@ -1,4 +1,5 @@
-const { db } = require( '../firebaseConfig.js')
+const { AllowedMentionsTypes } = require('discord.js')
+const { db,admin} = require( '../firebaseConfig.js')
 
 /**
  * Updates the user's balance in the database
@@ -59,7 +60,11 @@ const addUser = async (userId, initialBalance) => {
         monthFromNow: 'PLACEHOLDER NULL'
     })
 }
-
+/**
+ * 
+ * @param {*} itemName 
+ * @returns Firebase document of the item
+ */
 const getItem = async (itemName) => {
     // query the database to find the item
     const item = await db.collection('items').where('name', '==', itemName).get()
@@ -68,7 +73,14 @@ const getItem = async (itemName) => {
     // if the item is found, return the item
     return item
 }
-
+/**
+ * 
+ * @param {*} maxPerUser 
+ * @param {*} itemName 
+ * @param {*} itemPrice 
+ * @param {*} quantity 
+ * @param {*} type 
+ */
 const addItem = async (maxPerUser,itemName, itemPrice,quantity,type) => {
     // query the database to find the item
     const item = await db.collection('items').where('name', '==', itemName).get()
@@ -84,11 +96,39 @@ const addItem = async (maxPerUser,itemName, itemPrice,quantity,type) => {
     })
 }
 
+const addItemToUser = async (userId, item) => {
+    // query the database to find the user
+    const user = await db.collection('users').where('discordId', '==', userId).get()
+    //query to find the item
+    const itemData = await db.collection('items').where('name', '==', item).get()
+    // if the user is not found, return
+    if (user.empty) return
+
+    
+    if(itemData.docs[0].data().quantity > 0){
+
+        //map of the item to push to db.
+        const itemMap = {
+            name: itemData.docs[0].data().name,
+            type: itemData.docs[0].data().type,
+            purchased_at: new Date().getTime(),
+            owned: 1
+        }
+        //push itemMap into inventory array inside user document
+        user.forEach(doc => {
+            db.collection('users').doc(doc.id).update({
+                inventory: admin.firestore.FieldValue.arrayUnion(itemMap)
+            })
+        })
+    }
+}
+
 module.exports = {
     updateBalance,
     addUser,
     getUser,
     getAllItems,
     addItem,
-    getItem
+    getItem,
+    addItemToUser
 }
