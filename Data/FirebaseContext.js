@@ -81,7 +81,7 @@ const getItem = async (itemName) => {
  * @param {*} quantity 
  * @param {*} type 
  */
-const addItem = async (maxPerUser,itemName, itemPrice,quantity,type) => {
+const addItem = async (maxPerUser, itemName, itemPrice, quantity, type) => {
     // query the database to find the item
     const item = await db.collection('items').where('name', '==', itemName).get()
     // if the item is found, return
@@ -96,6 +96,12 @@ const addItem = async (maxPerUser,itemName, itemPrice,quantity,type) => {
     })
 }
 
+/**
+ * Add an item to the user's inventory
+ * @param {*} userId user's discord ID
+ * @param {*} item Name of the item to add to the user's inventory
+ * @returns 
+ */
 const addItemToUser = async (userId, item) => {
     // query the database to find the user
     const user = await db.collection('users').where('discordId', '==', userId).get()
@@ -104,21 +110,26 @@ const addItemToUser = async (userId, item) => {
     // if the user is not found, return
     if (user.empty) return
 
-    if(itemData.docs[0].data().quantity > 0){
+    // remove quantity 1 from the item
+    db.collection('items').doc(itemData.docs[0].id).update({
+        quantity: itemData.docs[0].data().quantity - 1
+    });
 
-        //map of the item to push to db.
-        const itemMap = {
-            name: itemData.docs[0].data().name,
+    // Check if the user already has the item
+    const userItem = await db.collection('users').doc(user.docs[0].id).collection('inventory').where('name', '==', item).get()
+    // if the user already has the item, update the quantity
+    if (!userItem.empty) {
+        console.log(userItem);
+        db.collection('users').doc(user.docs[0].id).collection('inventory').doc(userItem.docs[0].id).update({
+            owned: userItem.docs[0].data().owned + 1
+        });
+    } else {
+        // if the user does not have the item, add it to their inventory
+        db.collection('users').doc(user.docs[0].id).collection('inventory').add({
+            name: item,
             type: itemData.docs[0].data().type,
-            purchased_at: new Date().getTime(),
             owned: 1
-        }
-        //push itemMap into inventory array inside user document
-        user.forEach(doc => {
-            db.collection('users').doc(doc.id).update({
-                inventory: admin.firestore.FieldValue.arrayUnion(itemMap)
-            })
-        })
+        });
     }
 }
 
