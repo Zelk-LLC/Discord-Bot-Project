@@ -98,7 +98,7 @@ const addItem = async (maxPerUser, itemName, itemPrice, quantity, type) => {
 
 /**
  * Add an item to the user's inventory
- * @param {*} userId user's discord ID
+ * @param {*} userId User's discord ID
  * @param {*} item Name of the item to add to the user's inventory
  * @returns 
  */
