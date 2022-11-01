@@ -3,7 +3,6 @@ const {db} = require('../firebaseConfig.js')
 const { EmbedBuilder } = require('discord.js');
 const { getUser } = require('../Data/FirebaseContext.js');
 
-var balance
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('balance')
