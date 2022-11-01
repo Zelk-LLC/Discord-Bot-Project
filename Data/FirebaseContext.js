@@ -74,7 +74,7 @@ const getItem = async (itemName) => {
     return item
 }
 /**
- * 
+ * Add an item to the database
  * @param {*} maxPerUser 
  * @param {*} itemName 
  * @param {*} itemPrice 
