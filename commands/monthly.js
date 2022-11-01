@@ -11,7 +11,8 @@ module.exports = {
 	async execute(interaction) {
         const CurrentTime = new Date();
         const MonthFromNow = new Date(CurrentTime);
-        const monthly = 1000;
+        var monthly = 1000;
+        if(interaction.member.roles.cache.has('1034863713502638210')){ monthly = 2000;}
         MonthFromNow.setMonth(MonthFromNow.getMonth() + 1)
 
         const user = await getUser(interaction.user.id);
@@ -19,24 +20,14 @@ module.exports = {
             return interaction.reply("You don't have an account. Please use /register to create one.");
         }
         else {
-            if(user.docs[0].data().monthFromNow == 'PLACEHOLDER NULL'){
-                updateBalance(interaction.user.id, monthly);
-                db.collection('users').doc(user.docs[0].id).update({
-                    monthFromNow: MonthFromNow
-                })
-                return interaction.reply(`You have been given ${monthly} scrip for the month.`);
+            //if CurrentTime is more than a month from now then update the balance and set the next payment date to a month from now.
+            if(CurrentTime < new Date(user.docs[0].data().monthFromNow)){
+                return interaction.reply(`You have already been given your monthly scrip.`);
             }
             else {
-                if(user.docs[0].data().monthFromNow < CurrentTime){
-                    updateBalance(interaction.user.id, monthly);
-                    db.collection('users').doc(user.docs[0].id).update({
-                        monthFromNow: MonthFromNow
-                    })
-                    return interaction.reply(`You have been given ${monthly} scrip for the month.`);
-                }
-                else {
-                    return interaction.reply(`You have been given ${monthly} scrip for the month.`);
-                }
+                await updateBalance(interaction.user.id, monthly);
+                await db.collection('users').doc(user.docs[0].id).update({monthFromNow: MonthFromNow.toString()});
+                return interaction.reply(`You have been paid ${monthly} scrip.`);
             }
         }
     }

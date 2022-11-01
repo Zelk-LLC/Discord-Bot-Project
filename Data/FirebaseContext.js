@@ -57,7 +57,7 @@ const addUser = async (userId, initialBalance) => {
     db.collection('users').add({
         discordId: userId,
         balance: initialBalance,
-        monthFromNow: 'PLACEHOLDER NULL'
+        monthFromNow: null
     })
 }
 /**

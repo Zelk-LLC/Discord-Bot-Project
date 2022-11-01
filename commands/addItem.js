@@ -38,12 +38,13 @@ module.exports = {
         const quantity = interaction.options.getInteger('quantity')
         const type = interaction.options.getString('type')
 
-        const item = getItem(name);
+        const item = await getItem(name);
+       //if item already exists
         if(item != undefined){
             return interaction.reply("Item already exists.");
         }
 
-        addItem(name, maxPerUser, price, quantity, type);
+        addItem(maxPerUser,name, price, quantity, type);
         interaction.reply(`Item ${name} has been added.`);
     }
 };
