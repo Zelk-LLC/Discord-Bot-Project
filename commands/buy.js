@@ -16,20 +16,20 @@ module.exports = {
         const user = await getUser(interaction.user.id);
         const itemData = await getItem(item);
         if(user == undefined){
-            return interaction.reply("You don't have an account.");
+            return interaction.reply("You don't have an account. Please use /register to create one.");
         }
         
         if(itemData == undefined){
-            return interaction.reply("Item doesn't exist.");
+            return interaction.reply(`Item ${item} doesn't exist.`);
         }
         if(itemData.docs[0].data().quantity <= 0){
-            return interaction.reply("Item is out of stock.");
+            return interaction.reply(`Item ${item} is out of stock.`);
         }
         if(user.docs[0].data().balance < itemData.docs[0].data().price){
             return interaction.reply("You don't have enough scrip to complete this transaction.");
         }
      
-        updateBalance(interaction.user.id, user.balance - itemData.price);
+        updateBalance(interaction.user.id, -itemData.docs[0].data().price);
 
         interaction.reply(`You have bought ${item} for ${itemData.price} scrip.`);
     }
