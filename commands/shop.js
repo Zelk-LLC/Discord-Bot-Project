@@ -27,8 +27,8 @@ module.exports = {
 				if(items.docs[i * 25 + j] == undefined){
 					break;
 				}
-				fields.push({name: items.docs[i * 25 + j].data().name, value: `Price: ${items.docs[i * 25 + j].data().price} Scrip`});
-			}
+				fields.push({name: items.docs[i * 25 + j].data().name, value: `Price: ${items.docs[i * 25 + j].data().price} Scrip ${items.docs[i * 25 + j].data().quantity > 0 ? `(${items.docs[i * 25 + j].data().quantity} left)` : '(Out of stock)'}`});
+			}	
 			
 			embed.addFields(fields);
 			embeds.push(embed);
