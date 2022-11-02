@@ -26,7 +26,7 @@ const updateBalance = async (userId, amount) => {
  * @returns {admin.firestore.QuerySnapshot} Collection of users logs
  */
 const getLogs = async (userId) => {
-    const logs = await db.collection('Logs').where('userID', '===', userId).get();
+    const logs = await db.collection('Log').where('userID', '==', userId).get();
     return logs;
 }
 
