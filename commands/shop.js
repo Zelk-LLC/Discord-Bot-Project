@@ -33,7 +33,6 @@ module.exports = {
 			embed.addFields(fields);
 			embeds.push(embed);
 		}
-		console.log(embeds);
 		
 		const getRow = (id) => {
 			const row = new ActionRowBuilder()
