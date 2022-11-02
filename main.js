@@ -1,6 +1,6 @@
 // Require the necessary discord.js classes
 const { Client, Events, GatewayIntentBits,Collection,REST,Routes} = require('discord.js');
-const { clientId, token } = require('./config.json');
+const { clientId, token, testToken, testClientId, isDevMode } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
 const { getAllItems } = require('./Data/FirebaseContext.js');
@@ -8,6 +8,9 @@ const { getAllItems } = require('./Data/FirebaseContext.js');
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+var clientToken = isDevMode ? testToken : token;
+var clientID = isDevMode ? testClientId : clientId;
 
 client.commands = new Collection();
 
@@ -31,7 +34,7 @@ for (const file of commandFiles) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST({ version: '10' }).setToken(token);
+const rest = new REST({ version: '10' }).setToken(clientToken);
 
 // and deploy your commands!
 (async () => {
@@ -40,7 +43,7 @@ const rest = new REST({ version: '10' }).setToken(token);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
-			Routes.applicationCommands(clientId),
+			Routes.applicationCommands(clientID),
 			{ body: commands },
 		);
 
@@ -76,7 +79,7 @@ client.once(Events.ClientReady, c => {
 });
 
 // Log in to Discord with your client's token
-client.login(token);
+client.login(clientToken);
 
 module.exports = {
 	items
