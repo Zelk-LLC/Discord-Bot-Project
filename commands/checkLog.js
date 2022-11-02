@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { getLogs } = require('../Data/FireBaseContext.js');
 
 module.exports = {
@@ -13,9 +13,10 @@ module.exports = {
     async execute(interaction) {
         const embeds = [];
         const pages = {};
-        const userId = interaction.options.getUser('user-tag');
+        const user = interaction.options.getUser('user-tag');
+        const userId = user.id;
         const logs = await getLogs(userId);
-        const pageCountMax = Math.ceil(logs.docs.length / 10);
+        const pageCountMax = Math.ceil(logs.docs.length / 5);
 
         if(pageCountMax == 0 ) {
             return interaction.reply("There are no logs to display for this user.");
@@ -29,9 +30,9 @@ module.exports = {
                 .setTimestamp()
                 .setFooter({text: `Page ${i + 1} of ${pageCountMax.toString()}`})
             const fields = [];
-            for(let j = 0; j < 10; j++) {
-                if(logs.docs[i * 10 + j] == undefined) break;
-                fields.push({name: logs.docs[i * 10 + j].data().time, value: `${logs.docs[i * 10 + j].data().command} ${logs.docs[i * 10 + j].data().parameters}`})
+            for(let j = 0; j < 5; j++) {
+                if(logs.docs[i * 5 + j] == undefined) break;
+                fields.push({name: logs.docs[i * 5 + j].data().time.toDate().toDateString(), value: `${logs.docs[i * 5 + j].data().command} ${logs.docs[i * 5 + j].data().parameters}`})
             }
             embed.addFields(fields);
             embeds.push(embed);
@@ -60,7 +61,7 @@ module.exports = {
 
         const embed = embeds[pages[uid]];
 
-        interaction.reply({embeds: [embed], Components: [getRow(uid)]});
+        interaction.reply({embeds: [embed], components: [getRow(uid)]});
 
         let collector = interaction.channel.createMessageComponentCollector({filter: (i) => i.user.id === interaction.user.id, time: 60000});
 
