@@ -13,6 +13,10 @@ module.exports = {
         const pages = {};
         const inventory = await getInventory(interaction.user.id);
         const pageCountMax = Math.ceil(inventory.docs.length / 25);
+        
+        if(pageCountMax == 0){
+            return interaction.reply("You have no items in your inventory.");
+        }
 
         for(let i = 0; i < pageCountMax; i++){
             const embed = new EmbedBuilder()
