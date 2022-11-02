@@ -1,4 +1,5 @@
 const { AllowedMentionsTypes } = require('discord.js')
+const { firestore } = require('firebase-admin')
 const { db,admin} = require( '../firebaseConfig.js')
 
 /**
@@ -17,6 +18,16 @@ const updateBalance = async (userId, amount) => {
         balance: doc.data().balance + amount
         })
     })
+}
+
+/**
+ * Get the logs of a user.
+ * @param {integer} userId User's discord id
+ * @returns {admin.firestore.QuerySnapshot} Collection of users logs
+ */
+const getLogs = async (userId) => {
+    const logs = await db.collection('Logs').where('userID', '===', userId).get();
+    return logs;
 }
 
 /**
@@ -174,5 +185,6 @@ module.exports = {
     getItem,
     addItemToUser,
     getInventory,
-    dbLog
+    dbLog,
+    getLogs
 }
