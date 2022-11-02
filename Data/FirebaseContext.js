@@ -20,7 +20,7 @@ const updateBalance = async (userId, amount) => {
 }
 
 /**
- * 
+ * Get all items in the items database.
  * @returns collection of all items in the database
  */
 const getAllItems = async () => {
@@ -128,11 +128,17 @@ const addItemToUser = async (userId, item) => {
         db.collection('users').doc(user.docs[0].id).collection('inventory').add({
             name: item,
             type: itemData.docs[0].data().type,
-            owned: 1
+            owned: 1,
+            purchased: admin.firestore.Timestamp.now()
         });
     }
 }
 
+/**
+ * Get the users inventory.
+ * @param {int} userId User's discord id.
+ * @returns {admin.firestore.QuerySnapshot} Collection of the user's inventory.
+ */
 const getInventory = async (userId) => {
     // query the database to find the user
     const user = await db.collection('users').where('discordId', '==', userId).get()
@@ -143,6 +149,22 @@ const getInventory = async (userId) => {
     return inventory
 }
 
+/**
+ * Log the command usage to the database
+ * @param {ChatInputCommandInteraction} interaction 
+ * @param {string} args 
+ */
+const dbLog = async (interaction, args) => {
+    console.log(args);
+    db.collection('Log').add({
+        command: interaction.commandName,
+        guild: interaction.guildId,
+        userID: interaction.user.id,
+        time: admin.firestore.Timestamp.now(),
+        parameters: args
+    });
+}
+
 module.exports = {
     updateBalance,
     addUser,
@@ -151,5 +173,6 @@ module.exports = {
     addItem,
     getItem,
     addItemToUser,
-    getInventory
+    getInventory,
+    dbLog
 }
