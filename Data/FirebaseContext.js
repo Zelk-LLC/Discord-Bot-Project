@@ -28,7 +28,7 @@ const updateBalance = async (userId, amount) => {
 const getLogs = async (userId) => {
     const user = await db.collection('users').where('discordId', '==', userId).get();
     if (user.empty) return;
-    const logs = await db.collection('users').doc(user.docs[0].id).collection('Log').get();
+    const logs = await db.collection('users').doc(user.docs[0].id).collection('Log').orderBy('time', 'desc').get();
     return logs;
 }
 

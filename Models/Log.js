@@ -15,7 +15,7 @@ async function Log(interaction) {
 
     const guild = await interaction.client.guilds.fetch('1034838314555031552');
     const channel = guild.channels.cache.get('1037462133996269588');
-    channel.send(`[LOG] [${new Date().toLocaleTimeString()}EST] [${interaction.user.username}#${interaction.user.discriminator}] /${interaction.commandName} ${args.replace(/,\s*$/, "")}`);
+    channel.send(`[LOG] [${new Date().toLocaleTimeString()} EST] [${interaction.user.username}#${interaction.user.discriminator}] /${interaction.commandName} ${args.replace(/,\s*$/, "")}`);
 }
 
 module.exports = {
