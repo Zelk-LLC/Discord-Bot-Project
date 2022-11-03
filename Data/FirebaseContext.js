@@ -26,7 +26,9 @@ const updateBalance = async (userId, amount) => {
  * @returns {admin.firestore.QuerySnapshot} Collection of users logs
  */
 const getLogs = async (userId) => {
-    const logs = await db.collection('Log').where('userID', '==', userId).get();
+    const user = await db.collection('users').where('discordId', '==', userId).get();
+    if (user.empty) return;
+    const logs = await db.collection('users').doc(user.docs[0].id).collection('Log').get();
     return logs;
 }
 
@@ -166,8 +168,12 @@ const getInventory = async (userId) => {
  * @param {string} args 
  */
 const dbLog = async (interaction, args) => {
-    console.log(args);
-    db.collection('Log').add({
+    // query the database to find the user
+    const user = await db.collection('users').where('discordId', '==', interaction.user.id).get()
+    // if the user is not found, return
+    if (user.empty) return
+    // if the user is found, add the log to the database
+    db.collection('users').doc(user.docs[0].id).collection('Log').add({
         command: interaction.commandName,
         guild: interaction.guildId,
         userID: interaction.user.id,
