@@ -1,7 +1,8 @@
-const { SlashCommandBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const {db} = require('../firebaseConfig.js')
 const { EmbedBuilder } = require('discord.js');
 const { getAllItems } = require('../Data/FirebaseContext.js');
+const buttonPages = require('../Models/pagination.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,9 +11,7 @@ module.exports = {
 		
 	async execute(interaction) {
 		const embeds = [];
-		const pages = {};
 		const items = await getAllItems();
-		const index = 0;
 		const pageCountMax = Math.ceil(items.docs.length / 25);
 				
 		for(let i = 0; i < pageCountMax; i++){
@@ -33,43 +32,6 @@ module.exports = {
 			embed.addFields(fields);
 			embeds.push(embed);
 		}
-		
-		const getRow = (id) => {
-			const row = new ActionRowBuilder()
-				.addComponents(
-					new ButtonBuilder()
-						.setCustomId('prev')
-						.setLabel('Previous')
-						.setStyle(ButtonStyle.Primary)
-						.setDisabled(pages[id] == 0),
-					new ButtonBuilder()
-						.setCustomId('next')
-						.setLabel('Next')
-						.setStyle(ButtonStyle.Primary)
-						.setDisabled(pages[id] == pageCountMax - 1),
-				);
-			return row;
-		}
-		const id = interaction.user.id;
-
-		pages[id] = pages[id] || 0;
-
-		const embed = embeds[pages[id]];
-
-		interaction.reply({ embeds: [embed], components: [getRow(id)] });
-
-		let collector = interaction.channel.createMessageComponentCollector({ filter: i => i.user.id === id, time: 15000 });
-
-		collector.on('collect', async i => {
-			if(!i.isButton()) return;
-			if(i.customId == 'prev' && pages[id] > 0) {
-				pages[id]--;
-			}
-			else if(i.customId == 'next' && pages[id] < pageCountMax - 1) {
-				pages[id]++;
-			}
-			const embed = embeds[pages[id]];
-			i.update({ embeds: [embed], components: [getRow(id)] });
-		});
+		buttonPages(interaction, embeds);
     }
 };
