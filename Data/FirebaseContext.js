@@ -1,4 +1,5 @@
 const { AllowedMentionsTypes } = require('discord.js')
+const { firestore } = require('firebase-admin')
 const { db,admin} = require( '../firebaseConfig.js')
 
 /**
@@ -20,8 +21,20 @@ const updateBalance = async (userId, amount) => {
 }
 
 /**
- * 
- * @returns collection of all items in the database
+ * Get the logs of a user.
+ * @param {integer} userId User's discord id
+ * @returns {admin.firestore.QuerySnapshot} Collection of users logs
+ */
+const getLogs = async (userId) => {
+    const user = await db.collection('users').where('discordId', '==', userId).get();
+    if (user.empty) return;
+    const logs = await db.collection('users').doc(user.docs[0].id).collection('Log').orderBy('time', 'desc').get();
+    return logs;
+}
+
+/**s
+ * Get all items in the items database.
+ * @returns {admin.firestore.QuerySnapshot} Collection of all items in the database
  */
 const getAllItems = async () => {
     const items = await db.collection('items').get()
@@ -31,8 +44,8 @@ const getAllItems = async () => {
 
 /**
  * Get the first user from the database that matches the given discord ID
- * @param {*} userId users's discord ID
- * @returns Firebase document of the user
+ * @param {*} userId Users's discord ID
+ * @returns {admin.firestore.QuerySnapshot} Firebase document of the user
  */
 const getUser = async (userId) => {
     // query the database to find the user
@@ -61,9 +74,9 @@ const addUser = async (userId, initialBalance) => {
     })
 }
 /**
- * 
- * @param {*} itemName 
- * @returns Firebase document of the item
+ * Get an item from the database
+ * @param {string} itemName 
+ * @returns {admin.firestore.QuerySnapshot} Firebase document of the item
  */
 const getItem = async (itemName) => {
     // query the database to find the item
@@ -100,7 +113,6 @@ const addItem = async (maxPerUser, itemName, itemPrice, quantity, type) => {
  * Add an item to the user's inventory
  * @param {*} userId User's discord ID
  * @param {*} item Name of the item to add to the user's inventory
- * @returns 
  */
 const addItemToUser = async (userId, item) => {
     // query the database to find the user
@@ -128,11 +140,17 @@ const addItemToUser = async (userId, item) => {
         db.collection('users').doc(user.docs[0].id).collection('inventory').add({
             name: item,
             type: itemData.docs[0].data().type,
-            owned: 1
+            owned: 1,
+            purchased: admin.firestore.Timestamp.now()
         });
     }
 }
 
+/**
+ * Get the users inventory.
+ * @param {int} userId User's discord id.
+ * @returns {admin.firestore.QuerySnapshot} Collection of the user's inventory.
+ */
 const getInventory = async (userId) => {
     // query the database to find the user
     const user = await db.collection('users').where('discordId', '==', userId).get()
@@ -143,6 +161,26 @@ const getInventory = async (userId) => {
     return inventory
 }
 
+/**
+ * Log the command usage to the database
+ * @param {ChatInputCommandInteraction} interaction 
+ * @param {string} args 
+ */
+const dbLog = async (interaction, args) => {
+    // query the database to find the user
+    const user = await db.collection('users').where('discordId', '==', interaction.user.id).get()
+    // if the user is not found, return
+    if (user.empty) return
+    // if the user is found, add the log to the database
+    db.collection('users').doc(user.docs[0].id).collection('Log').add({
+        command: interaction.commandName,
+        guild: interaction.guildId,
+        userID: interaction.user.id,
+        time: admin.firestore.Timestamp.now(),
+        parameters: args
+    });
+}
+
 module.exports = {
     updateBalance,
     addUser,
@@ -151,5 +189,7 @@ module.exports = {
     addItem,
     getItem,
     addItemToUser,
-    getInventory
+    getInventory,
+    dbLog,
+    getLogs
 }
