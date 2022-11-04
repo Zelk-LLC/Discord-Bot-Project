@@ -32,9 +32,9 @@ const getLogs = async (userId) => {
     return logs;
 }
 
-/**
+/**s
  * Get all items in the items database.
- * @returns collection of all items in the database
+ * @returns {admin.firestore.QuerySnapshot} Collection of all items in the database
  */
 const getAllItems = async () => {
     const items = await db.collection('items').get()
@@ -44,8 +44,8 @@ const getAllItems = async () => {
 
 /**
  * Get the first user from the database that matches the given discord ID
- * @param {*} userId users's discord ID
- * @returns Firebase document of the user
+ * @param {*} userId Users's discord ID
+ * @returns {admin.firestore.QuerySnapshot} Firebase document of the user
  */
 const getUser = async (userId) => {
     // query the database to find the user
@@ -74,9 +74,9 @@ const addUser = async (userId, initialBalance) => {
     })
 }
 /**
- * 
- * @param {*} itemName 
- * @returns Firebase document of the item
+ * Get an item from the database
+ * @param {string} itemName 
+ * @returns {admin.firestore.QuerySnapshot} Firebase document of the item
  */
 const getItem = async (itemName) => {
     // query the database to find the item
@@ -113,7 +113,6 @@ const addItem = async (maxPerUser, itemName, itemPrice, quantity, type) => {
  * Add an item to the user's inventory
  * @param {*} userId User's discord ID
  * @param {*} item Name of the item to add to the user's inventory
- * @returns 
  */
 const addItemToUser = async (userId, item) => {
     // query the database to find the user
