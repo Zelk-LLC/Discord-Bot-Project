@@ -1,7 +1,8 @@
-const {SlashCommandBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
-const {db} = require('../firebaseConfig.js')
-const {EmbedBuilder} = require('discord.js');
-const {getUser,getInventory} = require('../Data/FirebaseContext.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { db } = require('../firebaseConfig.js')
+const { EmbedBuilder } = require('discord.js');
+const { getInventory } = require('../Data/FirebaseContext.js');
+const buttonPages = require('../Models/pagination.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,7 +11,6 @@ module.exports = {
 
     async execute(interaction){
         const embeds = [];
-        const pages = {};
         const inventory = await getInventory(interaction.user.id);
         const pageCountMax = Math.ceil(inventory.docs.length / 25);
         
@@ -36,45 +36,7 @@ module.exports = {
             embed.addFields(fields);
             embeds.push(embed);
         }
-        console.log(embeds);
-
-        const getRow = (id) => {
-            const row = new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId('prev')
-                        .setLabel('Previous')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(pages[id] == 0),
-                    new ButtonBuilder()
-                        .setCustomId('next')
-                        .setLabel('Next')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(pages[id] == pageCountMax - 1),
-                );
-            return row;
-        }
-
-        const id = interaction.user.id;
-
-        pages[id] = pages[id] || 0;
-
-        const embed = embeds[pages[id]];
-
-        interaction.reply({embeds: [embed], components: [getRow(id)]});
-
-        let collector = interaction.channel.createMessageComponentCollector({filter: (i) => i.user.id === interaction.user.id, time: 60000});
-
-        collector.on('collect', async (i) => {
-            if(i.customId == 'prev'){
-                pages[id]--;
-            }else if(i.customId == 'next'){
-                pages[id]++;
-            }
-
-            const embed = embeds[pages[id]];
-
-            await i.update({embeds: [embed], components: [getRow(id)]});
-        });
+        
+        buttonPages(interaction, embeds);
     }
 };

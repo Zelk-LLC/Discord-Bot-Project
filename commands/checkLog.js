@@ -13,7 +13,6 @@ module.exports = {
 
     async execute(interaction) {
         const embeds = [];
-        const pages = {};
         const user = interaction.options.getUser('user-tag');
         const userId = user.id;
         const logs = await getLogs(userId);
@@ -26,8 +25,8 @@ module.exports = {
         for(let i = 0; i < pageCountMax; i++) {
             const embed =  new EmbedBuilder()
                 .setColor("#0099ff")
-                .setTitle("Logs")
-                .setDescription(`Logs for user.`)
+                .setTitle(`Logs for ${user.username}`)
+                .setThumbnail(user.avatarURL())
                 .setTimestamp()
                 .setFooter({text: `Page ${i + 1} of ${pageCountMax.toString()}`})
             const fields = [];
