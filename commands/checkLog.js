@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { getLogs } = require('../Data/FireBaseContext.js');
 const buttonPages = require('../Models/pagination.js');
 
@@ -9,7 +9,8 @@ module.exports = {
         .addUserOption(Option =>
             Option.setName('user-tag')
             .setDescription("User's @")
-            .setRequired(true)),
+            .setRequired(true))
+            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
         const embeds = [];
