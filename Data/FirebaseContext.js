@@ -2,6 +2,7 @@ const { AllowedMentionsTypes } = require('discord.js')
 const { firestore } = require('firebase-admin')
 const { db,admin} = require( '../firebaseConfig.js')
 
+
 /**
  * Updates the user's balance in the database
  * @param {*} userId users's discord ID
@@ -187,12 +188,42 @@ const dbLog = async (interaction, args) => {
  * @returns {int} Monthly rate of the users role. Will return zero if the role does not exist in the database.
  */
 const getMonthlyRate = async (interaction) => {
+    // Check if the user has a role, if not return zero.
+    if (interaction.member.roles.cache.size == 0) return 0
     // Query the roles database to find the users role
     const role = await db.collection('roles').where('id', '==', interaction.member.roles.cache.first().id).get()
     // if the role is not found, return
     if (role.empty) return
     // if the role is found, return the monthly rate
     return role.docs[0].data().monthlyRate;
+}
+
+const getRolesWithPermissions = async (command) => {
+    // Query the roles database to find all roles with permissions
+    const roles = await db.collection('roles').where('permissions', 'array-contains', command).get()
+    // if the roles are not found, return
+    if (roles.empty) return
+    // if the roles are found, return the roles
+    return roles;
+}
+
+
+const getRole = async (roleId) => {
+    // Query the roles database to find the role
+    const role = await db.collection('roles').where('id', '==', roleId).get()
+    // if the role is not found, return
+    if (role.empty) return
+    // if the role is found, return the role
+    return role
+}
+
+const getRolePermission = async (roleId, permission) => {
+    // Query the roles database to find the role
+    const role = await db.collection('roles').where('id', '==', roleId).get()
+    // if the role is not found, return
+    if (role.empty) return false;
+    // if the role is found, return the role
+    return role.docs[0].data().permissions.includes(permission);
 }
 
 module.exports = {
@@ -206,5 +237,7 @@ module.exports = {
     getInventory,
     dbLog,
     getLogs,
-    getMonthlyRate
+    getMonthlyRate,
+    getRolesWithPermissions,
+    getRolePermission
 }

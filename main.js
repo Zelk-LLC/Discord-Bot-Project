@@ -4,6 +4,7 @@ const { clientId, token, testToken, testClientId, isDevMode } = require('./confi
 const fs = require('node:fs');
 const path = require('node:path');
 const { Log } = require('./Models/Log.js');
+const { getRolesWithPermissions } = require('./Data/FirebaseContext.js');
 
 
 // Create a new client instance
@@ -22,8 +23,7 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 for (const file of commandFiles) {
 	const filePath = path.join(commandsPath, file);
 	const command = require(filePath);
-    commands.push(command.data.toJSON());
-	// Set a new item in the Collection with the key as the command name and the value as the exported module
+	commands.push(command.data.toJSON());
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
 	} else {
