@@ -14,7 +14,7 @@ module.exports = {
 				option.setName("amount")
 			.setDescription("amount")
 			.setRequired(true))
-			.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+			.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 		
 	async execute(interaction) {
 		const userId = interaction.options.getUser("user-tag").id;

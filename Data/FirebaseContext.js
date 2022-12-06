@@ -181,6 +181,17 @@ const dbLog = async (interaction, args) => {
     });
 }
 
+const getMonthlyRate = async (interaction) => {
+    // Query the roles database to find the users role
+    // get the role of the user from the interaction
+    console.log(interaction.member.roles.cache.first());
+    const role = await db.collection('roles').where('id', '==', interaction.member.roles.cache.first().id).get()
+    // if the role is not found, return
+    if (role.empty) return
+    // if the role is found, return the monthly rate
+    return role.docs[0].data().monthlyRate;
+}
+
 module.exports = {
     updateBalance,
     addUser,
@@ -191,5 +202,6 @@ module.exports = {
     addItemToUser,
     getInventory,
     dbLog,
-    getLogs
+    getLogs,
+    getMonthlyRate
 }
