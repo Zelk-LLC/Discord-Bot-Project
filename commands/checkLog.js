@@ -10,7 +10,7 @@ module.exports = {
             Option.setName('user-tag')
             .setDescription("User's @")
             .setRequired(true))
-            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+            .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
         const embeds = [];

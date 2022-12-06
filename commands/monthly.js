@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const {db} = require('../firebaseConfig.js')
 const { EmbedBuilder } = require('discord.js');
-const { getUser, updateBalance } = require('../Data/FirebaseContext.js');
+const { getUser, updateBalance, getMonthlyRate } = require('../Data/FirebaseContext.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -11,8 +11,7 @@ module.exports = {
 	async execute(interaction) {
         const CurrentTime = new Date();
         const MonthFromNow = new Date(CurrentTime);
-        var monthly = 1000;
-        if(interaction.member.roles.cache.has('1034863713502638210')){ monthly = 2000;}
+        var monthly = await getMonthlyRate(interaction) ?? 0;
         MonthFromNow.setMonth(MonthFromNow.getMonth() + 1)
 
         const user = await getUser(interaction.user.id);
