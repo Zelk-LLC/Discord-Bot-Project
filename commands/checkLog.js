@@ -19,9 +19,8 @@ module.exports = {
         const pageCountMax = Math.ceil(logs.docs.length / 5);
 
         // Check if the users role has the permission to use this command
-        console.log(interaction.member.roles.cache.first().id);
-        if(getRolePermission(interaction.member.roles.cache.first().id, 'checklog') == false){
-            console.log("I got here :)");
+        const hasPermission = await getRolePermission(interaction.member.roles.cache.first().id, 'check-log');
+        if(!hasPermission){
             return interaction.reply({content: "You do not have permission to use this command.", ephemeral: true});
         }
 
