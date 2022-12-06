@@ -181,10 +181,13 @@ const dbLog = async (interaction, args) => {
     });
 }
 
+/**
+ * Get the monthly rate of a users role
+ * @param {ChatInputCommandInteraction} interaction 
+ * @returns {int} Monthly rate of the users role. Will return zero if the role does not exist in the database.
+ */
 const getMonthlyRate = async (interaction) => {
     // Query the roles database to find the users role
-    // get the role of the user from the interaction
-    console.log(interaction.member.roles.cache.first());
     const role = await db.collection('roles').where('id', '==', interaction.member.roles.cache.first().id).get()
     // if the role is not found, return
     if (role.empty) return
