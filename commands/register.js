@@ -8,8 +8,8 @@ module.exports = {
 		.setDescription("Registers you to the database if you're not already in it."),
 		
 	async execute(interaction) {
-		const userId = interaction.user.id
-		const initialBalance = 50
+		const userId = interaction.user.id;
+		const initialBalance = 0;
 		
 		const user = await getUser(userId);
 		if(user == undefined){
