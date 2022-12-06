@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const { getLogs } = require('../Data/FireBaseContext.js');
+const { getLogs, getRolePermission } = require('../Data/FireBaseContext.js');
 const buttonPages = require('../Models/pagination.js');
 
 module.exports = {
@@ -9,8 +9,7 @@ module.exports = {
         .addUserOption(Option =>
             Option.setName('user-tag')
             .setDescription("User's @")
-            .setRequired(true))
-            .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+            .setRequired(true)),
 
     async execute(interaction) {
         const embeds = [];
@@ -18,6 +17,13 @@ module.exports = {
         const userId = user.id;
         const logs = await getLogs(userId);
         const pageCountMax = Math.ceil(logs.docs.length / 5);
+
+        // Check if the users role has the permission to use this command
+        console.log(interaction.member.roles.cache.first().id);
+        if(getRolePermission(interaction.member.roles.cache.first().id, 'checklog') == false){
+            console.log("I got here :)");
+            return interaction.reply({content: "You do not have permission to use this command.", ephemeral: true});
+        }
 
         if(pageCountMax == 0 ) {
             return interaction.reply("There are no logs to display for this user.");
