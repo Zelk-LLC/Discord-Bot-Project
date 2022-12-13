@@ -226,6 +226,18 @@ const getRolePermission = async (roleId, permission) => {
     return role.docs[0].data().permissions.includes(permission);
 }
 
+const changeMonthlyRate = async (roleId, rate) => {
+    // Query the roles database to find the role
+    const role = await db.collection('roles').where('id', '==', roleId).get()
+    // if the role is not found, return
+    if (role.empty) return false;
+    // if the role is found, change the monthly rate
+    db.collection('roles').doc(role.docs[0].id).update({
+        monthlyRate: rate
+    })
+}
+
+
 module.exports = {
     updateBalance,
     addUser,
@@ -239,5 +251,6 @@ module.exports = {
     getLogs,
     getMonthlyRate,
     getRolesWithPermissions,
-    getRolePermission
+    getRolePermission,
+    changeMonthlyRate
 }
