@@ -237,6 +237,18 @@ const changeMonthlyRate = async (roleId, rate) => {
     })
 }
 
+//Async function to restock a specific item in the database
+const restockItem = async (item, quantity) => {
+    //Query the database to find the item
+    const itemData = await db.collection('items').where('name', '==', item).get()
+    //If the item is not found, return
+    if (itemData.empty) return
+    //If the item is found, update the quantity
+    db.collection('items').doc(itemData.docs[0].id).update({
+        quantity: itemData.docs[0].data().quantity + quantity
+    });
+}
+
 
 module.exports = {
     updateBalance,
@@ -252,5 +264,6 @@ module.exports = {
     getMonthlyRate,
     getRolesWithPermissions,
     getRolePermission,
-    changeMonthlyRate
+    changeMonthlyRate,
+    restockItem
 }

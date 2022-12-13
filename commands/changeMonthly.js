@@ -21,7 +21,11 @@ module.exports = {
 		const role = interaction.options.getRole("role-tag");
 		const amount = interaction.options.getInteger("amount");
 
-		
+		 // Check if the users role has the permission to use this command
+		 const hasPermission = await getRolePermission(interaction.member.roles.cache.first().id, 'restock');
+		 if(!hasPermission){
+			 return interaction.reply({content: "You do not have permission to use this command.", ephemeral: true});
+		 }
 
 		if(amount < 0){
 			return interaction.reply({content: "You cannot set the monthly rate to a negative number.", ephemeral: true});
