@@ -21,6 +21,11 @@ module.exports = {
         const pageCountMax = Math.ceil(inventory.docs.length / 25);
 		const user = await getUser(interaction.user.id);
 
+		const hasPermission = await getRolePermission(interaction.member.roles.cache.first().id, 'add-item');
+        if(!hasPermission){
+            return interaction.reply({content: "You do not have permission to use this command.", ephemeral: true});
+        }
+
 		if(pageCountMax == 0){
             return interaction.reply("This user has no items in their inventory.");
         }
