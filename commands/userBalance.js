@@ -15,6 +15,12 @@ module.exports = {
 	async execute(interaction) {
         const userId = interaction.options.getUser("user-tag").id;
 
+		// Check if the users role has the permission to use this command
+        const hasPermission = await getRolePermission(interaction.member.roles.cache.first().id, 'player-balance');
+        if(!hasPermission){
+            return interaction.reply({content: "You do not have permission to use this command.", ephemeral: true});
+        }
+
 		const user = await getUser(userId);
 		if(user == undefined){
 			return interaction.reply("This user doesn't have an account. Please have them use /register to create one.");
