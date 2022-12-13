@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const {db} = require('../firebaseConfig.js')
 const { EmbedBuilder } = require('discord.js');
-const { getInventory,getUser } = require('../Data/FirebaseContext.js');
+const { getInventory,getUser,getRolePermission } = require('../Data/FirebaseContext.js');
 const buttonPages = require('../Models/pagination.js');
 
 module.exports = {
