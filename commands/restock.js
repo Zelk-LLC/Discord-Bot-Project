@@ -24,7 +24,12 @@ module.exports = {
            
 
             const item = await getItem(name);
-            //if item doesn't exist.
+        
+            const hasPermission = await getRolePermission(interaction.member.roles.cache.first().id, 'restock');
+            if(!hasPermission){
+                return interaction.reply({content: "You do not have permission to use this command.", ephemeral: true});
+            }
+
             if(item == undefined){
                 return interaction.reply("Item does not exist.");
             }

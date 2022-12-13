@@ -249,6 +249,24 @@ const restockItem = async (item, quantity) => {
     });
 }
 
+//Async function to remove a specific item from a user's inventory
+const removeItemFromUser = async (userId, item) => {
+    //Query the database to find the user
+    const user = await db.collection('users').where('discordId', '==', userId).get()
+    //If the user is not found, return
+    if (user.empty) return
+    //If the user is found, query the database to find the item
+    const userItem = await db.collection('users').doc(user.docs[0].id).collection('inventory').where('name', '==', item).get()
+    //If the item is not found, return
+    if (userItem.empty) return
+    //If the item is found, update the quantity
+    db.collection('users').doc(user.docs[0].id).collection('inventory').doc(userItem.docs[0].id).update({
+        owned: userItem.docs[0].data().owned - 1
+    });
+}
+
+
+
 
 module.exports = {
     updateBalance,
@@ -265,5 +283,6 @@ module.exports = {
     getRolesWithPermissions,
     getRolePermission,
     changeMonthlyRate,
-    restockItem
+    restockItem,
+    removeItemFromUser
 }
