@@ -226,6 +226,48 @@ const getRolePermission = async (roleId, permission) => {
     return role.docs[0].data().permissions.includes(permission);
 }
 
+const changeMonthlyRate = async (roleId, rate) => {
+    // Query the roles database to find the role
+    const role = await db.collection('roles').where('id', '==', roleId).get()
+    // if the role is not found, return
+    if (role.empty) return false;
+    // if the role is found, change the monthly rate
+    db.collection('roles').doc(role.docs[0].id).update({
+        monthlyRate: rate
+    })
+}
+
+//Async function to restock a specific item in the database
+const restockItem = async (item, quantity) => {
+    //Query the database to find the item
+    const itemData = await db.collection('items').where('name', '==', item).get()
+    //If the item is not found, return
+    if (itemData.empty) return
+    //If the item is found, update the quantity
+    db.collection('items').doc(itemData.docs[0].id).update({
+        quantity: itemData.docs[0].data().quantity + quantity
+    });
+}
+
+//Async function to remove a specific item from a user's inventory
+const removeItemFromUser = async (userId, item) => {
+    //Query the database to find the user
+    const user = await db.collection('users').where('discordId', '==', userId).get()
+    //If the user is not found, return
+    if (user.empty) return
+    //If the user is found, query the database to find the item
+    const userItem = await db.collection('users').doc(user.docs[0].id).collection('inventory').where('name', '==', item).get()
+    //If the item is not found, return
+    if (userItem.empty) return
+    //If the item is found, update the quantity
+    db.collection('users').doc(user.docs[0].id).collection('inventory').doc(userItem.docs[0].id).update({
+        owned: userItem.docs[0].data().owned - 1
+    });
+}
+
+
+
+
 module.exports = {
     updateBalance,
     addUser,
@@ -239,5 +281,8 @@ module.exports = {
     getLogs,
     getMonthlyRate,
     getRolesWithPermissions,
-    getRolePermission
+    getRolePermission,
+    changeMonthlyRate,
+    restockItem,
+    removeItemFromUser
 }
